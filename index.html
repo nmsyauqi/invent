@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventaris</title>
+</head>
+<body>
+    <h2>Katalog Inventaris</h2>
+    
+    <input type="text" id="inputBarang" placeholder="Masukkan nama barang...">
+    <button id="btnTambah">Simpan</button>
+
+    <ul id="daftarBarang">
+        <script>
+            // read
+            async function ambilDataBarang() {
+                const { data, error } = await db.from('barang').select('*');
+
+                if (error) {
+                    console.error("Gagal mengambil data:", error.message);
+                    return;
+                }
+
+                console.log("Data barang dari database:", data);
+            }
+
+            // create
+            async function tambahBarangBaru(namaBarangInput) {
+                const { data, error } = await db.from('barang').insert([
+                    { nama: namaBarangInput } 
+                ]);
+
+                if (error) {
+                    console.error("Gagal menambah barang:", error.message);
+                } else {
+                    console.log("Barang berhasil ditambah!");
+                    ambilDataBarang(); 
+                }
+            }
+            
+            document.getElementById('btnTambah').addEventListener('click', () => {
+                const input = document.getElementById('inputBarang').value;
+                if (input) {
+                    tambahBarangBaru(input);
+                    document.getElementById('inputBarang').value = '';
+                }
+            });
+
+        </script>
+    </ul>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        const { createClient } = supabase;
+        const supabaseUrl = 'https://wrcfiapabfbnyoqdwfgl.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyY2ZpYXBhYmZibnlvcWR3ZmdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNDU5MzMsImV4cCI6MjA5ODcyMTkzM30.4A1z0y8kqQkLv2qnwiI5udd9z8_FRUNXAOoY9IdFduw';
+        const db = createClient(supabaseUrl, supabaseKey);
+
+        console.log("Supabase berhasil dimuat!", db);
+    </script>
+</body>
+</html>
