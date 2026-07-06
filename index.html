@@ -12,43 +12,7 @@
     <button id="btnTambah">Simpan</button>
 
     <ul id="daftarBarang">
-        <script>
-            // read
-            async function ambilDataBarang() {
-                const { data, error } = await db.from('barang').select('*');
-
-                if (error) {
-                    console.error("Gagal mengambil data:", error.message);
-                    return;
-                }
-
-                console.log("Data barang dari database:", data);
-            }
-
-            // create
-            async function tambahBarangBaru(namaBarangInput) {
-                const { data, error } = await db.from('barang').insert([
-                    { nama: namaBarangInput } 
-                ]);
-
-                if (error) {
-                    console.error("Gagal menambah barang:", error.message);
-                } else {
-                    console.log("Barang berhasil ditambah!");
-                    ambilDataBarang(); 
-                }
-            }
-            
-            document.getElementById('btnTambah').addEventListener('click', () => {
-                const input = document.getElementById('inputBarang').value;
-                if (input) {
-                    tambahBarangBaru(input);
-                    document.getElementById('inputBarang').value = '';
-                }
-            });
-
-        </script>
-    </ul>
+        </ul>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -58,7 +22,96 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyY2ZpYXBhYmZibnlvcWR3ZmdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNDU5MzMsImV4cCI6MjA5ODcyMTkzM30.4A1z0y8kqQkLv2qnwiI5udd9z8_FRUNXAOoY9IdFduw';
         const db = createClient(supabaseUrl, supabaseKey);
 
-        console.log("Supabase berhasil dimuat!", db);
+        const elemenDaftar = document.getElementById('daftarBarang');
+
+                // read
+        async function ambilDataBarang() {
+            const { data, error } = await db.from('inventaris').select('*').order('id', { ascending: false });
+
+            if (error) {
+                console.error("Gagal mengambil data:", error.message);
+                return;
+            }
+            
+            elemenDaftar.innerHTML = '';
+
+            data.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item.nama_barang + " ";
+                
+                const btnEdit = document.createElement('button');
+                btnEdit.textContent = "Edit";
+                btnEdit.onclick = () => editBarang(item.id);
+
+                const btnHapus = document.createElement('button');
+                btnHapus.textContent = "Hapus";
+                btnHapus.onclick = () => hapusBarang(item.id);
+
+                li.appendChild(btnEdit);
+                li.appendChild(btnHapus);
+                elemenDaftar.appendChild(li);
+            });
+        }
+
+        // create
+        async function tambahBarangBaru(namaBarangInput) {
+            const { error } = await db.from('inventaris').insert([
+                { nama_barang: namaBarangInput } 
+            ]);
+
+            if (error) {
+                console.error("Gagal menambah barang:", error.message);
+                alert("Gagal menyimpan! Buka inspect element -> console untuk melihat error.");
+            } else {
+                ambilDataBarang();
+            }
+        }
+
+        // update
+        async function editBarang(idBarang) {
+            const namaBaru = prompt("Masukkan nama barang yang baru:");
+    
+            if (namaBaru) {
+                const { error } = await db.from('inventaris')
+                    .update({ nama_barang: namaBaru })
+                    .eq('id', idBarang); // "eq" artinya Equals (id = idBarang)
+
+                if (error) {
+                    console.error("Gagal update:", error.message);
+                } else {
+                    ambilDataBarang(); // Refresh tabel
+                }
+            }
+        }
+
+
+        // delete
+        async function hapusBarang(idBarang) {
+            const konfirmasi = confirm("Yakin ingin menghapus data ini?");
+            
+            if (konfirmasi) {
+                const { error } = await db.from('inventaris')
+                    .delete()
+                    .eq('id', idBarang);
+
+                if (error) {
+                    console.error("Gagal hapus:", error.message);
+                } else {
+                    ambilDataBarang(); // Refresh tabel
+                }
+            }
+        }
+        
+        document.getElementById('btnTambah').addEventListener('click', () => {
+            const elemenInput = document.getElementById('inputBarang');
+            if (elemenInput.value) {
+                tambahBarangBaru(elemenInput.value); 
+                elemenInput.value = ''; 
+            }
+        });
+
+        ambilDataBarang();
+        
     </script>
 </body>
 </html>
