@@ -8,8 +8,8 @@
 <body>
     <h2>Invent</h2>
     
-    <input type="text" id="inputBarang" placeholder="Masukkan nama barang...">
-    <button id="btnTambah">Simpan</button>
+    <input type="text" id="inputBarang" placeholder="Nomen...">
+    <button id="btnTambah">Ita</button>
 
     <ul id="daftarBarang">
         </ul>
@@ -29,7 +29,7 @@
             const { data, error } = await db.from('inventaris').select('*').order('id', { ascending: false });
 
             if (error) {
-                console.error("Gagal mengambil data:", error.message);
+                console.error("Infelix legere:", error.message);
                 return;
             }
             
@@ -40,11 +40,11 @@
                 li.textContent = item.nama_barang + " ";
                 
                 const btnEdit = document.createElement('button');
-                btnEdit.textContent = "Edit";
+                btnEdit.textContent = "Mutare";
                 btnEdit.onclick = () => editBarang(item.id);
 
                 const btnHapus = document.createElement('button');
-                btnHapus.textContent = "Hapus";
+                btnHapus.textContent = "Delere";
                 btnHapus.onclick = () => hapusBarang(item.id);
 
                 li.appendChild(btnEdit);
@@ -60,8 +60,8 @@
             ]);
 
             if (error) {
-                console.error("Gagal menambah barang:", error.message);
-                alert("Gagal menyimpan! Buka inspect element -> console untuk melihat error.");
+                console.error("Infelix creare:", error.message);
+                alert("Infelix, in konsole vide!");
             } else {
                 ambilDataBarang();
             }
@@ -69,17 +69,17 @@
 
         // update
         async function editBarang(idBarang) {
-            const namaBaru = prompt("Masukkan nama barang yang baru:");
+            const namaBaru = prompt("Mutare:");
     
             if (namaBaru) {
                 const { error } = await db.from('inventaris')
                     .update({ nama_barang: namaBaru })
-                    .eq('id', idBarang); // "eq" artinya Equals (id = idBarang)
+                    .eq('id', idBarang); 
 
                 if (error) {
-                    console.error("Gagal update:", error.message);
+                    console.error("Infelix mutare:", error.message);
                 } else {
-                    ambilDataBarang(); // Refresh tabel
+                    ambilDataBarang(); 
                 }
             }
         }
@@ -87,7 +87,7 @@
 
         // delete
         async function hapusBarang(idBarang) {
-            const konfirmasi = confirm("Yakin ingin menghapus data ini?");
+            const konfirmasi = confirm("Delere?");
             
             if (konfirmasi) {
                 const { error } = await db.from('inventaris')
@@ -95,7 +95,7 @@
                     .eq('id', idBarang);
 
                 if (error) {
-                    console.error("Gagal hapus:", error.message);
+                    console.error("Infelix delere:", error.message);
                 } else {
                     ambilDataBarang(); // Refresh tabel
                 }
