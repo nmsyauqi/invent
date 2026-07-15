@@ -26,7 +26,7 @@
 
                 // read
         async function ambilDataBarang() {
-            const { data, error } = await db.from('inventaris').select('*').order('id', { ascending: false });
+            const { data, error } = await db.from('order').select('*').order('id', { ascending: false });
 
             if (error) {
                 console.error("Infelix legere:", error.message);
@@ -37,15 +37,15 @@
 
             data.forEach(item => {
                 const li = document.createElement('li');
-                li.textContent = item.nama_barang + " ";
+                li.textContent = item.customer_name + " " + item.customer_id + " " + item.order_id + " ";
                 
                 const btnEdit = document.createElement('button');
                 btnEdit.textContent = "Mutare";
-                btnEdit.onclick = () => editBarang(item.id);
+                btnEdit.onclick = () => editBarang(item.order_id);
 
                 const btnHapus = document.createElement('button');
                 btnHapus.textContent = "Delere";
-                btnHapus.onclick = () => hapusBarang(item.id);
+                btnHapus.onclick = () => hapusBarang(item.order_id);
 
                 li.appendChild(btnEdit);
                 li.appendChild(btnHapus);
@@ -55,7 +55,7 @@
 
         // create
         async function tambahBarangBaru(namaBarangInput) {
-            const { error } = await db.from('inventaris').insert([
+            const { error } = await db.from('order').insert([
                 { nama_barang: namaBarangInput } 
             ]);
 
@@ -72,7 +72,7 @@
             const namaBaru = prompt("Mutare:");
     
             if (namaBaru) {
-                const { error } = await db.from('inventaris')
+                const { error } = await db.from('order')
                     .update({ nama_barang: namaBaru })
                     .eq('id', idBarang); 
 
@@ -90,7 +90,7 @@
             const konfirmasi = confirm("Delere?");
             
             if (konfirmasi) {
-                const { error } = await db.from('inventaris')
+                const { error } = await db.from('order')
                     .delete()
                     .eq('id', idBarang);
 
